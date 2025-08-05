@@ -30,6 +30,7 @@ Node.js Order Service microservice with MongoDB database deployed on Kubernetes.
 - Health monitoring endpoints
 - Docker containerization
 - Kubernetes deployment with 4 replicas
+- **Rolling Updates** with zero-downtime deployments
 - NGINX Ingress Controller for external access
 
 ## Prerequisites
@@ -142,7 +143,9 @@ microservice/
 │   ├── order-service-deployment.yaml # Order Service Deployment
 │   ├── ingress.yaml                # Ingress configuration
 │   ├── deploy.sh                   # Deployment script
-│   └── cleanup.sh                  # Cleanup script
+│   ├── cleanup.sh                  # Cleanup script
+│   ├── rolling-update.sh           # Rolling update script (Linux/Mac)
+│   └── rolling-update.ps1          # Rolling update script (Windows)
 └── README.md                       # This file
 ```
 
@@ -165,6 +168,101 @@ kubectl scale deployment order-service-deployment --replicas=6
 
 # Clean up
 cd k8s && ./cleanup.sh
+```
+
+## Rolling Updates
+
+The deployment is configured with a **RollingUpdate** strategy for zero-downtime deployments:
+
+### Rolling Update Configuration
+- **Strategy**: RollingUpdate
+- **Max Unavailable**: 1 pod (ensures at least 3 pods remain available)
+- **Max Surge**: 2 pods (allows up to 6 pods during update)
+- **Readiness Probe**: Optimized for faster updates (3s intervals)
+
+### Rolling Update Commands
+
+#### Using PowerShell Script (Windows - Recommended)
+```powershell
+# Check deployment status
+.\rolling-update.ps1 status
+
+# Update to new image version
+.\rolling-update.ps1 update kumarl1/order-service:v2.0
+
+# Rollback to previous version
+.\rolling-update.ps1 rollback
+
+# View rollout history
+.\rolling-update.ps1 history
+
+# Perform rolling restart (same image, new pods)
+.\rolling-update.ps1 restart
+
+# Scale deployment
+.\rolling-update.ps1 scale 6
+```
+
+#### Using Bash Script (Linux/Mac)
+```bash
+# Check deployment status
+./rolling-update.sh status
+
+# Update to new image version
+./rolling-update.sh update kumarl1/order-service:v2.0
+
+# Rollback to previous version
+./rolling-update.sh rollback
+
+# View rollout history
+./rolling-update.sh history
+
+# Perform rolling restart
+./rolling-update.sh restart
+
+# Scale deployment
+./rolling-update.sh scale 6
+```
+
+#### Direct kubectl Commands
+```bash
+# Update image (triggers rolling update)
+kubectl set image deployment/order-service-deployment order-service=kumarl1/order-service:v2.0
+
+# Check rollout status
+kubectl rollout status deployment/order-service-deployment
+
+# Rollback to previous version
+kubectl rollout undo deployment/order-service-deployment
+
+# View rollout history
+kubectl rollout history deployment/order-service-deployment
+
+# Restart deployment (rolling restart)
+kubectl rollout restart deployment/order-service-deployment
+
+# Pause/Resume rollout
+kubectl rollout pause deployment/order-service-deployment
+kubectl rollout resume deployment/order-service-deployment
+```
+
+### Rolling Update Process
+1. **Preparation**: New pods are created with the updated image
+2. **Readiness Check**: New pods must pass readiness probes
+3. **Traffic Shift**: Load balancer routes traffic to ready pods
+4. **Old Pod Termination**: Old pods are gracefully terminated
+5. **Completion**: All pods are updated with zero downtime
+
+### Monitoring Rolling Updates
+```bash
+# Watch pods during update
+kubectl get pods -w -l app=order-service
+
+# Monitor deployment events
+kubectl describe deployment order-service-deployment
+
+# Check pod status and readiness
+kubectl get pods -l app=order-service -o wide
 ```
 
 ## Environment Variables
