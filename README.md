@@ -81,9 +81,9 @@ kubectl apply -f ingress.yaml
 ## API Endpoints
 
 ### Access Service
+- **Live API**: `http://35.193.20.71/api/orders`
+- **Health Check**: `http://35.193.20.71/health/orders`
 - Get Ingress IP: `kubectl get ingress microservices-ingress`
-- API: `http://<INGRESS_IP>/api/orders`
-- Health: `http://<INGRESS_IP>/health/orders`
 - Local: `http://localhost:3003` (with port-forward)
 
 ### API Operations
@@ -176,3 +176,7 @@ cd k8s && ./cleanup.sh
 - **MongoDB Username**: `admin`
 - **MongoDB Password**: `password123`
 - **Database**: `microservices_db`
+
+## Docker Hub
+- **Image Repository**: https://hub.docker.com/repository/docker/kumarl1/order-service/general
+- **Image**: `kumarl1/order-service:latest`
