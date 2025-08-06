@@ -138,14 +138,11 @@ microservice/
 │   ├── mongodb-deployment.yaml      # MongoDB StatefulSet
 │   ├── mongodb-secret.yaml          # Database credentials
 │   ├── mongodb-init-configmap.yaml  # DB initialization
-│   ├── mongodb-pv.yaml             # Persistent Volume
-│   ├── mongodb-pvc.yaml            # Persistent Volume Claim
 │   ├── order-service-deployment.yaml # Order Service Deployment
 │   ├── ingress.yaml                # Ingress configuration
 │   ├── deploy.sh                   # Deployment script
 │   ├── cleanup.sh                  # Cleanup script
-│   ├── rolling-update.sh           # Rolling update script (Linux/Mac)
-│   └── rolling-update.ps1          # Rolling update script (Windows)
+│   
 └── README.md                       # This file
 ```
 
