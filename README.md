@@ -92,28 +92,50 @@ kubectl apply -f ingress.yaml
 # Get all orders
 GET /api/orders
 
-# Get order by ID
-GET /api/orders/1
-
-# Create order
-POST /api/orders
-{
-  "userId": 1,
-  "items": [{"productId": 1, "quantity": 2, "price": 1299.99}],
-  "shippingAddress": {
-    "street": "123 Main St",
-    "city": "New York",
-    "state": "NY",
-    "zipCode": "10001",
-    "country": "USA"
+[
+  {
+    id: 1,
+    userId: 1,
+    items: [
+      { productId: 1, quantity: 1, price: 1299.99 },
+      { productId: 2, quantity: 2, price: 29.99 }
+    ],
+    totalAmount: 1359.97,
+    status: "completed",
+    orderDate: new Date("2025-01-15T10:30:00Z"),
+    shippingAddress: {
+      street: "123 Main St",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      country: "USA"
+    },
+    createdAt: new Date("2025-01-15T10:30:00Z"),
+    updatedAt: new Date("2025-01-16T10:30:00Z")
+  },
+  {
+    id: 2,
+    userId: 2,
+    items: [
+      { productId: 3, quantity: 1, price: 299.99 }
+    ],
+    totalAmount: 299.99,
+    status: "pending",
+    orderDate: new Date("2025-01-20T14:15:00Z"),
+    shippingAddress: {
+      street: "456 Oak Ave",
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90210",
+      country: "USA"
+    },
+    createdAt: new Date("2025-01-20T14:15:00Z"),
+    updatedAt: new Date("2025-01-20T14:15:00Z")
   }
-}
+]
 
-# Update order
-PUT /api/orders/1
 
-# Delete order
-DELETE /api/orders/1
+
 ```
 
 ## Project Structure
@@ -177,71 +199,7 @@ The deployment is configured with a **RollingUpdate** strategy for zero-downtime
 - **Max Surge**: 2 pods (allows up to 6 pods during update)
 - **Readiness Probe**: Optimized for faster updates (3s intervals)
 
-### Rolling Update Commands
 
-#### Using PowerShell Script (Windows - Recommended)
-```powershell
-# Check deployment status
-.\rolling-update.ps1 status
-
-# Update to new image version
-.\rolling-update.ps1 update kumarl1/order-service:v2.0
-
-# Rollback to previous version
-.\rolling-update.ps1 rollback
-
-# View rollout history
-.\rolling-update.ps1 history
-
-# Perform rolling restart (same image, new pods)
-.\rolling-update.ps1 restart
-
-# Scale deployment
-.\rolling-update.ps1 scale 6
-```
-
-#### Using Bash Script (Linux/Mac)
-```bash
-# Check deployment status
-./rolling-update.sh status
-
-# Update to new image version
-./rolling-update.sh update kumarl1/order-service:v2.0
-
-# Rollback to previous version
-./rolling-update.sh rollback
-
-# View rollout history
-./rolling-update.sh history
-
-# Perform rolling restart
-./rolling-update.sh restart
-
-# Scale deployment
-./rolling-update.sh scale 6
-```
-
-#### Direct kubectl Commands
-```bash
-# Update image (triggers rolling update)
-kubectl set image deployment/order-service-deployment order-service=kumarl1/order-service:v2.0
-
-# Check rollout status
-kubectl rollout status deployment/order-service-deployment
-
-# Rollback to previous version
-kubectl rollout undo deployment/order-service-deployment
-
-# View rollout history
-kubectl rollout history deployment/order-service-deployment
-
-# Restart deployment (rolling restart)
-kubectl rollout restart deployment/order-service-deployment
-
-# Pause/Resume rollout
-kubectl rollout pause deployment/order-service-deployment
-kubectl rollout resume deployment/order-service-deployment
-```
 
 ### Rolling Update Process
 1. **Preparation**: New pods are created with the updated image
